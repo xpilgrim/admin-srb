@@ -419,7 +419,7 @@ def work_on_files_cloud(roboting_sgs):
 
     if shows_to_cloud == 0:
         db.write_log_to_db_a(ac,
-                    "Keine VPs fuer externe Cloud gefunden", "t",
+                    "Keine VPs fuer externe Cloud vorgesehen", "t",
                     "write_also_to_console")
         return
 
@@ -505,7 +505,7 @@ def work_on_files_ftp(roboting_sgs):
 
     if shows_to_ftp == 0:
         db.write_log_to_db_a(ac,
-                    "Keine VPs fuer externen FTP-Server gefunden", "t",
+                    "Keine VPs fuer externen FTP-Server vorgesehen", "t",
                     "write_also_to_console")
         return
 
