@@ -500,7 +500,7 @@ def work_on_files_ftp(roboting_sgs):
     # first check if we have any ftp
     shows_to_ftp = 0
     for item in roboting_sgs:
-        if item[1].strip() == "T":
+        if item[3].strip() == "T":
             shows_to_ftp += 1
 
     if shows_to_ftp == 0:
