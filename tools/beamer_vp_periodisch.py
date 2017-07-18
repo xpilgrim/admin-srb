@@ -491,12 +491,25 @@ def work_on_files_cloud(roboting_sgs):
                     lib_cm.erase_file(ac, db, path_file_temp)
 
 
-def work_on_files(roboting_sgs):
+def work_on_files_ftp(roboting_sgs):
     """
     - search audiofiles from roboting-sgs,
     - if found, work on them
     """
     lib_cm.message_write_to_console(ac, "work_on_files")
+    # first check if we have any ftp
+    shows_to_ftp = 0
+    for item in roboting_sgs:
+        if item[1].strip() == "T":
+            shows_to_ftp += 1
+
+    if shows_to_ftp == 0:
+        db.write_log_to_db_a(ac,
+                    "Keine VPs fuer externen FTP-Server gefunden", "t",
+                    "write_also_to_console")
+        return
+
+    ftp = ftp_connect()
 
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item[0].encode('ascii', 'ignore'))
@@ -508,75 +521,6 @@ def work_on_files(roboting_sgs):
             lib_cm.message_write_to_console(ac, "Keine Sendungen gefunden")
             continue
 
-        # dropbox
-        for sendung in sendungen:
-            if item[1].strip() != "T":
-                # not cloud
-                continue
-
-            db.write_log_to_db_a(ac,
-                    "VP fuer externe Cloud gefunden: "
-                    + sendung[11].encode('ascii', 'ignore'), "t",
-                    "write_also_to_console")
-
-            # create path and filename
-            (success, path_f_source, path_file_cloud,
-                path_ftp, filename_dest) = filepaths(item, sendung)
-            if success is False:
-                continue
-
-            success_file = check_file_source(path_f_source, sendung)
-            if success_file is False:
-                continue
-
-            if item[1].strip() == "T":
-                # to Cloud
-                lib_cm.message_write_to_console(ac, "dropbox")
-                file_is_in_cloud = check_file_dest_cloud(path_file_cloud)
-                if file_is_in_cloud is True:
-                    continue
-
-                # copy to dropbox
-                success_copy = copy_to_cloud(path_f_source, path_file_cloud)
-                if success_copy is False:
-                    continue
-
-                # info-txt-file
-                success_write_temp, path_file_temp = write_to_info_file(
-                                filename_dest, item, sendung)
-                if success_write_temp is False:
-                    # probs with file
-                    continue
-
-                # copy info-file to dropbox
-                filename_info = path_file_cloud.replace("mp3", "txt")
-                success_copy = copy_to_cloud(path_file_temp, filename_info)
-                if success_copy is False:
-                    continue
-
-                #db.write_log_to_db_a(ac,
-                #    "VP in Dropbox kopiert: " + filename_dest, "i",
-                #                                    "write_also_to_console")
-                db.write_log_to_db_a(ac,
-                    "VP in Dropbox kopiert: " + filename_dest, "n",
-                                                    "write_also_to_console")
-
-                # delete tmp-info-file
-                if success_write_temp is not False:
-                    lib_cm.erase_file(ac, db, path_file_temp)
-
-        # ftp
-        # first check if we have any ftp
-        show_to_ftp = 0
-        for sendung in sendungen:
-            if item[3].strip() == "T":
-                show_to_ftp += 1
-
-        if show_to_ftp == 0:
-            # no ftp necessary
-            return
-
-        ftp = ftp_connect()
         for sendung in sendungen:
             if item[3].strip() != "T":
                 # not ftp
@@ -640,7 +584,7 @@ def work_on_files(roboting_sgs):
                 # delete tmp-info-file
                 if success_write_temp is not False:
                     lib_cm.erase_file(ac, db, path_file_temp)
-        ftp.quit()
+    ftp.quit()
 
 
 def erase_files_prepaere(roboting_sgs):
@@ -817,8 +761,8 @@ def lets_rock():
 
     # beaming files if they not there
     work_on_files_cloud(roboting_sgs)
-    work_on_files(roboting_sgs)
-
+    work_on_files_ftp(roboting_sgs)
+    time.sleep(2)
     # delete old files from cloud or ftp
     erase_files_prepaere(roboting_sgs)
     return
