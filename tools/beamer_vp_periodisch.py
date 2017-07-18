@@ -249,7 +249,7 @@ def ftp_upload(ftp, path_f_source, path_ftp, filename_dest):
     try:
         c_ftp_cmd = "STOR " + filename_dest
         ftp.storbinary(c_ftp_cmd, f)
-    except ftplib.error_perm, resp:
+    except ftplib.error_perm:
         log_message = (ac.app_errorslist[9] + " - " + db.ac_config_1[7])
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         f.close()
@@ -680,7 +680,7 @@ def erase_files_from_ftp(path_dest_ftp, c_date_back):
                 log_message = ("Auf ftp-Server geloescht: " + item)
                 db.write_log_to_db_a(ac, log_message, "k",
                                     "write_also_to_console")
-            except ftplib.error_perm, resp:
+            except ftplib.error_perm:
                 log_message = (ac.app_errorslist[11] + " - " + item)
                 db.write_log_to_db_a(ac, log_message, "x",
                                     "write_also_to_console")
@@ -723,7 +723,7 @@ def ftp_connect_and_dir(path_ftp):
 
     try:
         ftp.login(db.ac_config_1[8], db.ac_config_1[9])
-    except ftplib.error_perm, resp:
+    except ftplib.error_perm:
         lib_cm.message_write_to_console(ac, "ftp: no login to: "
                                         + db.ac_config_1[7])
         log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
@@ -737,7 +737,7 @@ def ftp_change_dir(ftp, path_ftp):
     """change ftp dir"""
     try:
         ftp.cwd(path_ftp)
-    except ftplib.error_perm, resp:
+    except ftplib.error_perm:
         lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
                                         + db.ac_config_1[7])
         log_message = (ac.app_errorslist[8] + " - " + path_ftp)
