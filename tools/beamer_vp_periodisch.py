@@ -228,11 +228,14 @@ def copy_to_cloud(path_file_source, path_file_cloud):
     return success_copy
 
 
-def ftp_upload(path_f_source, path_ftp, filename_dest):
+def ftp_upload(ftp, path_f_source, path_ftp, filename_dest):
     """upload file"""
     success_upload = False
     lib_cm.message_write_to_console(ac, u"upload_file")
-    ftp = ftp_connect_and_dir(path_ftp)
+    #ftp = ftp_connect_and_dir(path_ftp)
+    changed_path = ftp_change_dir(ftp, path_ftp)
+    if changed_path is None:
+        return
     if ftp is None:
         return
     if os.path.isfile(path_f_source):
@@ -255,7 +258,7 @@ def ftp_upload(path_f_source, path_ftp, filename_dest):
     f.close()
     db.write_log_to_db_a(ac, u"VP per FTP hochgeladen: "
                         + filename_dest, "i", "write_also_to_console")
-    ftp.quit()
+    #ftp.quit()
     success_upload = True
     return success_upload
 
@@ -513,8 +516,6 @@ def work_on_files(roboting_sgs):
                 lib_cm.message_write_to_console(ac, "ftp")
                 file_is_online = check_file_dest_ftp(
                                         ftp, path_ftp, filename_dest)
-                ftp.quit()
-                time.sleep(1)
 
                 if file_is_online is True:
                     continue
@@ -524,7 +525,8 @@ def work_on_files(roboting_sgs):
 
                 # ftp-upload
                 success_upload = ftp_upload(
-                                path_f_source, path_ftp, filename_dest)
+                                ftp, path_f_source, path_ftp, filename_dest)
+                ftp.quit()
                 time.sleep(1)
 
                 if success_upload is False:
