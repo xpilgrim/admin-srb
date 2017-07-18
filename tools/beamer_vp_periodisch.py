@@ -695,15 +695,13 @@ def ftp_connect():
     try:
         ftp = ftplib.FTP(db.ac_config_1[7])
     except (socket.error, socket.gaierror):
-        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[7])
         db.write_log_to_db_a(ac, ac.app_errorslist[6], "x",
                                         "write_also_to_console")
         return None
 
     try:
         ftp.login(db.ac_config_1[8], db.ac_config_1[9])
-    except ftplib.error_perm, resp:
+    except ftplib.error_perm:
         lib_cm.message_write_to_console(ac, "ftp: no login to: "
                                         + db.ac_config_1[7])
         log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
