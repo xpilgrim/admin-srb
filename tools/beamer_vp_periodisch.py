@@ -526,8 +526,6 @@ def work_on_files(roboting_sgs):
                 # ftp-upload
                 success_upload = ftp_upload(
                                 ftp, path_f_source, path_ftp, filename_dest)
-                ftp.quit()
-                time.sleep(1)
 
                 if success_upload is False:
                     continue
@@ -542,8 +540,7 @@ def work_on_files(roboting_sgs):
                 # ftp-upload info-file
                 filename_info = filename_dest.replace("mp3", "txt")
                 success_upload = ftp_upload(
-                                path_file_temp, path_ftp, filename_info)
-                time.sleep(1)
+                                ftp, path_file_temp, path_ftp, filename_info)
 
                 if success_upload is False:
                     continue
@@ -558,7 +555,7 @@ def work_on_files(roboting_sgs):
                 # delete tmp-info-file
                 if success_write_temp is not False:
                     lib_cm.erase_file(ac, db, path_file_temp)
-        #ftp.quit()
+        ftp.quit()
 
 
 def erase_files_prepaere(roboting_sgs):
