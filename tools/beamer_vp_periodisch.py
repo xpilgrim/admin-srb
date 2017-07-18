@@ -405,7 +405,6 @@ def work_on_files(roboting_sgs):
     """
     lib_cm.message_write_to_console(ac, "work_on_files")
 
-    # dropbox
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item[0].encode('ascii', 'ignore'))
         titel = item[0]
@@ -416,8 +415,14 @@ def work_on_files(roboting_sgs):
             lib_cm.message_write_to_console(ac, "Keine Sendungen gefunden")
             continue
 
+        # dropbox
         for sendung in sendungen:
-            db.write_log_to_db_a(ac, "Sendung fuer VP nach extern gefunden: "
+            if item[1].strip() != "T":
+                # not cloud
+                continue
+
+            db.write_log_to_db_a(ac,
+                    "VP fuer externe Cloud gefunden: "
                     + sendung[11].encode('ascii', 'ignore'), "t",
                     "write_also_to_console")
 
@@ -469,7 +474,11 @@ def work_on_files(roboting_sgs):
 
         # ftp
         for sendung in sendungen:
-            db.write_log_to_db_a(ac, "Sendung fuer VP nach extern gefunden: "
+            if item[3].strip() != "T":
+                # not ftp
+                continue
+
+            db.write_log_to_db_a(ac, "VP fuer externen FTP gefunden: "
                     + sendung[11].encode('ascii', 'ignore'), "t",
                     "write_also_to_console")
 
