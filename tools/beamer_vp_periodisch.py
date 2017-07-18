@@ -78,7 +78,7 @@ class app_config(object):
         """Settings"""
         # app_config
         self.app_id = "020"
-        self.app_desc = u"beamer_vp_periodisch"
+        self.app_desc = u"VP_Beamer_periodisch"
         # key of config in db
         self.app_config = u"Beamer_VP_period"
         self.app_config_develop = u"Beamer_VP_period_e"
@@ -664,6 +664,11 @@ def ftp_connect_and_dir(path_ftp):
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
 
+    ftp_change_dir(ftp, path_ftp)
+
+
+def ftp_change_dir(ftp, path_ftp):
+    """change ftp dir"""
     try:
         ftp.cwd(path_ftp)
     except ftplib.error_perm, resp:
