@@ -65,6 +65,7 @@ Ausfuehrung: jede Stunde zur Minute 12
 import sys
 import os
 import datetime
+import time
 import shutil
 import socket
 import ftplib
@@ -496,6 +497,8 @@ def work_on_files(roboting_sgs):
                 # to ftp
                 lib_cm.message_write_to_console(ac, "ftp")
                 file_is_online = check_file_dest_ftp(path_ftp, filename_dest)
+                time.sleep(1)
+
                 if file_is_online is True:
                     continue
                 if file_is_online is None:
@@ -505,6 +508,8 @@ def work_on_files(roboting_sgs):
                 # ftp-upload
                 success_upload = ftp_upload(
                                 path_f_source, path_ftp, filename_dest)
+                time.sleep(1)
+
                 if success_upload is False:
                     continue
 
@@ -519,6 +524,8 @@ def work_on_files(roboting_sgs):
                 filename_info = filename_dest.replace("mp3", "txt")
                 success_upload = ftp_upload(
                                 path_file_temp, path_ftp, filename_info)
+                time.sleep(1)
+
                 if success_upload is False:
                     continue
 
