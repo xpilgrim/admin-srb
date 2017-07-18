@@ -474,6 +474,16 @@ def work_on_files(roboting_sgs):
                     lib_cm.erase_file(ac, db, path_file_temp)
 
         # ftp
+        # first check if we have any ftp
+        show_to_ftp = 0
+        for sendung in sendungen:
+            if item[3].strip() == "T":
+                show_to_ftp += 1
+
+        if show_to_ftp == 0:
+            # no ftp necessary
+            return
+
         for sendung in sendungen:
             if item[3].strip() != "T":
                 # not ftp
