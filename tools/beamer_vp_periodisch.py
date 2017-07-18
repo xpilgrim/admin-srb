@@ -367,13 +367,17 @@ def check_file_dest_cloud(path_file_cloud):
     return file_is_online
 
 
-def check_file_dest_ftp(path_ftp, filename_dest):
+def check_file_dest_ftp(ftp, path_ftp, filename_dest):
     """check if file exist in destination-ftp"""
     lib_cm.message_write_to_console(ac, "check_files_online_ftp")
     file_online = False
-    ftp = ftp_connect_and_dir(path_ftp)
+    #ftp = ftp_connect_and_dir(path_ftp)
     if ftp is None:
         return
+    changed_path = ftp_change_dir(ftp, path_ftp)
+    if changed_path is None:
+        return
+
     files_online = []
     try:
         files_online = ftp.nlst()
@@ -385,7 +389,7 @@ def check_file_dest_ftp(path_ftp, filename_dest):
             log_message = (ac.app_errorslist[9])
             db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
 
-    ftp.quit()
+    #ftp.quit()
     lib_cm.message_write_to_console(ac, files_online)
 
     for item in files_online:
@@ -484,6 +488,7 @@ def work_on_files(roboting_sgs):
             # no ftp necessary
             return
 
+        ftp = ftp_connect()
         for sendung in sendungen:
             if item[3].strip() != "T":
                 # not ftp
@@ -506,7 +511,9 @@ def work_on_files(roboting_sgs):
             if item[3].strip() == "T":
                 # to ftp
                 lib_cm.message_write_to_console(ac, "ftp")
-                file_is_online = check_file_dest_ftp(path_ftp, filename_dest)
+                file_is_online = check_file_dest_ftp(
+                                        ftp, path_ftp, filename_dest)
+                ftp.quit()
                 time.sleep(1)
 
                 if file_is_online is True:
@@ -549,6 +556,7 @@ def work_on_files(roboting_sgs):
                 # delete tmp-info-file
                 if success_write_temp is not False:
                     lib_cm.erase_file(ac, db, path_file_temp)
+        #ftp.quit()
 
 
 def erase_files_prepaere(roboting_sgs):
@@ -652,6 +660,28 @@ def erase_files_from_ftp(path_dest_ftp, c_date_back):
 
     ftp.quit()
     lib_cm.message_write_to_console(ac, files_online)
+
+
+def ftp_connect():
+    """connect to ftp, login and change dir"""
+    try:
+        ftp = ftplib.FTP(db.ac_config_1[7])
+    except (socket.error, socket.gaierror):
+        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
+                                        + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, ac.app_errorslist[6], "x",
+                                        "write_also_to_console")
+        return None
+
+    try:
+        ftp.login(db.ac_config_1[8], db.ac_config_1[9])
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no login to: "
+                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+    return ftp
 
 
 def ftp_connect_and_dir(path_ftp):
